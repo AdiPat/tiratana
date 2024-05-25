@@ -21,6 +21,23 @@ interface TArgs {
 }
 
 /**
+ * Checks if a file should be ignored.
+ * @param filePath File path to check if it should be ignored
+ * @returns true if the file should be ignored
+ */
+const shouldIgnoreFileByExtension = (filePath: Path): boolean => {
+  let shouldIgnore = false;
+
+  IGNORE_EXTENSIONS.forEach((ext) => {
+    if (filePath.endsWith(ext)) {
+      shouldIgnore = true;
+    }
+  });
+
+  return shouldIgnore;
+};
+
+/**
  *
  * Gets all the file paths in a directory.
  * @param dir The directory to search.
@@ -46,14 +63,15 @@ function getAllFiles(dir: Path): Path[] | null {
           return null;
         }
 
-        const filteredFiles = files.filter((filePath) => {
-          const ext = path.extname(filePath);
-          return !IGNORE_EXTENSIONS.includes(ext);
-        });
+        const filteredFiles = files.filter(
+          (filePath) => !shouldIgnoreFileByExtension(filePath)
+        );
 
         filePaths = filePaths.concat(filteredFiles);
       } else {
-        filePaths.push(path.join(dir, dirent.name));
+        if (!shouldIgnoreFileByExtension(dirent.name)) {
+          filePaths.push(path.join(dir, dirent.name));
+        }
       }
     });
 
