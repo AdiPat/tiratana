@@ -4,6 +4,9 @@ import fs from "fs";
 import path from "path";
 import { openai } from "@ai-sdk/openai";
 import { generateText } from "ai";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 type Path = string;
 
