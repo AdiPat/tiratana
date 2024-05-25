@@ -143,20 +143,7 @@ function getAllValidFiles(dir: Path): Path[] | null {
       throw new Error("failed to get all files in directory");
     }
 
-    const filteredFiles = allFiles.filter((filePath) => {
-      const ignoreByExtension = !shouldIgnoreFileByExtension(filePath);
-      let ignoreByDirectory = false;
-
-      IGNORE_DIRECTORIES.forEach((dir) => {
-        const fileName = path.basename(filePath);
-        const fileExists = fileExistsInDirectory(dir, fileName);
-        if (fileExists) {
-          ignoreByDirectory = true;
-        }
-      });
-
-      return !(ignoreByDirectory || ignoreByExtension);
-    });
+    const filteredFiles = filterIgnoredFiles(allFiles);
 
     return filteredFiles;
   } catch (err) {
