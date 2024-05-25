@@ -206,14 +206,24 @@ async function generateReport(sourceFile: Path): Promise<string> {
     console.log(
       `tiratana: found ${content.length} characters in ${sourceFile}`
     );
-    const result = await generateText({
-      model: openai("gpt-3.5-turbo-instruct"),
-      maxTokens: 4096,
-      prompt: `If this is code written in a known programming language, explain each line of this file. \n" +
-        If this is not a valid source file or you are unsure, just return "Not a valid code file.". \n\n" +
-        File Content: ${content}`,
-    });
-    return result.text;
+
+    const results = [];
+
+    const chunks = splitTextIntoChunks(content, 1000);
+
+    for (const chunk of chunks) {
+      const result = await generateText({
+        model: openai("gpt-4o"),
+        maxTokens: 4096 - chunk.length,
+        prompt: `If this is code written in a known programming language, explain each line of this file. \n" +
+          If this is not a valid source file or you are unsure, just return "Not a valid code file.". \n\n" +
+          File Content: ${chunk}`,
+      });
+      console.log("rssult:", result);
+      results.push(result.text);
+    }
+
+    return results.join("\n");
   } catch (err) {
     console.error("tiratana: failed to generate report", err);
     return "Failed to generate report.";
@@ -271,6 +281,7 @@ async function initArgs(): Promise<TArgs> {
  *
  */
 function validateArgs(args: TArgs): void {
+  console.log({ args });
   if (args.clear) {
     if (!(args.directory && args.directory != "")) {
       console.error("tiratana: no directory provided. Exiting.");
@@ -278,10 +289,10 @@ function validateArgs(args: TArgs): void {
     }
 
     if (args.all || args.file_path || args.individual) {
-    console.log(
-      "tiratana: clear cannot be passed with other arguments except directory. Exiting.  "
-    );
-    process.exit(1);
+      console.log(
+        "tiratana: clear cannot be passed with other arguments except directory. Exiting.  "
+      );
+      process.exit(1);
     }
   }
 
