@@ -7,6 +7,9 @@ import { generateText } from "ai";
 
 type Path = string;
 
+const IGNORE_DIRECTORIES = [".git", "node_modules"];
+const IGNORE_EXTENSIONS = [".report.txt"];
+
 interface TArgs {
   directory: string;
   all?: boolean;
@@ -28,6 +31,11 @@ function getAllFiles(dir: Path): Path[] | null {
 
     dirents.forEach((dirent) => {
       if (dirent.isDirectory()) {
+        if (IGNORE_DIRECTORIES.includes(dirent.name)) {
+          console.log("tiratana: ignoring directory ", dirent.name);
+          return;
+        }
+
         const files = getAllFiles(path.join(dir, dirent.name));
 
         if (!files) {
@@ -35,7 +43,12 @@ function getAllFiles(dir: Path): Path[] | null {
           return null;
         }
 
-        filePaths = filePaths.concat(files);
+        const filteredFiles = files.filter((filePath) => {
+          const ext = path.extname(filePath);
+          return !IGNORE_EXTENSIONS.includes(ext);
+        });
+
+        filePaths = filePaths.concat(filteredFiles);
       } else {
         filePaths.push(path.join(dir, dirent.name));
       }
