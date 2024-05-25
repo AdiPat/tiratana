@@ -50,6 +50,30 @@ function fileExistsInDirectory(dir: string, fileName: string): boolean {
 }
 
 /**
+ * Removes all files that should be ignored.
+ * @param filePaths File paths to check
+ * @returns Path array of file paths that are not ignored
+ */
+const filterIgnoredFiles = (filePaths: Path[]): Path[] => {
+  if (!filePaths) {
+    return [];
+  }
+
+  return filePaths.filter((filePath) => {
+    const fileExtension = path.extname(filePath);
+    const fileDirectory = path.dirname(filePath);
+
+    const ignoreByExtension = IGNORE_EXTENSIONS.includes(fileExtension);
+    const ignoreByDirectory = IGNORE_DIRECTORIES.some((dir) =>
+      filePath.startsWith(dir)
+    );
+
+    // If the file should be ignored by extension or directory, return false to exclude it from the filtered list
+    return !(ignoreByExtension || ignoreByDirectory);
+  });
+};
+
+/**
  *
  * Gets all the file paths in a directory (includes ignored files)
  * @param dir The directory to search.
