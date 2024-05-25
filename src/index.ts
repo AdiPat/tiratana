@@ -39,6 +39,17 @@ const shouldIgnoreFileByExtension = (filePath: Path): boolean => {
 };
 
 /**
+ * Checks if file exists in a directory
+ * @param dir directory to check if file exists
+ * @param fileName filename to check
+ * @returns true if file exists in directory
+ */
+function fileExistsInDirectory(dir: string, fileName: string): boolean {
+  const filePath = path.join(dir, fileName);
+  return fs.existsSync(filePath);
+}
+
+/**
  *
  * Gets all the file paths in a directory (includes ignored files)
  * @param dir The directory to search.
