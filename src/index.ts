@@ -235,6 +235,8 @@ async function run(): Promise<void> {
       return;
     }
 
+    console.log(`tiratana: found ${files.length} files in ${args.directory}`);
+
     files.forEach(async (sourceFile) => {
       try {
         const report = await generateReport(sourceFile);
