@@ -82,7 +82,7 @@ async function initArgs(): Promise<TArgs> {
  * @param directory The directory to process.
  * @returns void
  */
-async function run(): void {
+async function run(): Promise<void> {
   const args = await initArgs();
 
   const { directory } = args;
