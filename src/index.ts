@@ -137,33 +137,77 @@ async function initArgs(): Promise<TArgs> {
 
 /**
  *
+ * Validate command-line arguments
+ * @param args The arguments to validate.
+ * @returns void
+ *
+ */
+function validateArgs(args: TArgs): void {
+  if (args.all && !args.directory) {
+    console.log("tiratana: no directory provided. Exiting.");
+    process.exit(1);
+  }
+
+  if (!args.directory) {
+    console.log("tiratana: no directory provided. Exiting.");
+    process.exit(1);
+  }
+
+  if (args.all && args.individual) {
+    console.log(
+      "tiratana: cannot process all and individual files at the same time. Exiting."
+    );
+    process.exit(1);
+  }
+
+  if (args.file_path && !args.individual) {
+    console.log(
+      "tiratana: file_path provided without individual flag. Exiting."
+    );
+    process.exit(1);
+  }
+}
+
+/**
+ *
  * @param directory The directory to process.
  * @returns void
  */
 async function run(): Promise<void> {
   const args = await initArgs();
 
-  const { directory } = args;
+  validateArgs(args);
 
-  if (!args.directory) {
-    console.log("tiratana: no directory provided. Exiting.");
-    process.exit(1);
-  }
-  const files = getAllFiles(args.directory);
+  if (args.file_path) {
+    const report = await generateReport(args.file_path);
+    const reportFile = createEmptyReport(args.file_path);
 
-  files.forEach((sourceFile) => {
-    try {
-      generateReport(sourceFile);
-      const reportFile = createEmptyReport(sourceFile);
-      const report = `tiratana: found ${files.length} files.`;
-
-      if (reportFile) {
-        writeReport(report, reportFile);
-      }
-    } catch (err) {
-      console.error(`tiratana: failed to process ${sourceFile}`, err);
+    if (reportFile) {
+      writeReport(report, reportFile);
     }
-  });
 
-  console.log(`tiratana: processed ${files.length} files in ${directory}.`);
+    console.log(`tiratana: processed ${args.file_path}`);
+    return;
+  }
+
+  if (args.all) {
+    const files = getAllFiles(args.directory);
+
+    files.forEach(async (sourceFile) => {
+      try {
+        const report = await generateReport(sourceFile);
+        const reportFile = createEmptyReport(sourceFile);
+
+        if (reportFile) {
+          writeReport(report, reportFile);
+        }
+      } catch (err) {
+        console.error(`tiratana: failed to process ${sourceFile}`, err);
+      }
+    });
+    console.log(
+      `tiratana: processed ${files.length} files in ${args.directory}.`
+    );
+    return;
+  }
 }
