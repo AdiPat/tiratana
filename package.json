@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Tiratana is a CLI tool that generates a codebase report.",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "ts-node src/index.ts",
@@ -24,11 +25,17 @@
   },
   "homepage": "https://github.com/AdiPat/tiratana#readme",
   "devDependencies": {
+    "@types/node": "^20.12.12",
     "ts-node": "^10.9.2",
+    "tsx": "^4.11.0",
     "typescript": "^5.4.5"
   },
   "dependencies": {
+    "@ai-sdk/openai": "^0.0.14",
     "@types/yargs": "^17.0.32",
-    "yargs": "^17.7.2"
+    "ai": "^3.1.14",
+    "dotenv": "^16.4.5",
+    "yargs": "^17.7.2",
+    "zod": "^3.23.8"
   }
 }
