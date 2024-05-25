@@ -121,7 +121,11 @@ async function run(): Promise<void> {
       generateReport(sourceFile);
       const reportFile = createEmptyReport(sourceFile);
       const report = `tiratana: found ${files.length} files.`;
-      writeReport(report, reportFile);
+
+      if(reportFile) {
+        writeReport(report, reportFile);
+      }
+      
     } catch (err) {
       console.error(`tiratana: failed to process ${sourceFile}`, err);
     }
