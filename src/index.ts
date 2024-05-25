@@ -39,6 +39,27 @@ const shouldIgnoreFileByExtension = (filePath: Path): boolean => {
 };
 
 /**
+ * Splits text into chunks of a specified size
+ * @param text Text to split
+ * @param chunkSizeChars character size of chunk
+ * @returns string[] array of chunks
+ */
+const splitTextIntoChunks = (
+  text: string,
+  chunkSizeChars: number
+): string[] => {
+  const chunks = [];
+  let i = 0;
+
+  while (i < text.length) {
+    chunks.push(text.slice(i, i + chunkSizeChars));
+    i += chunkSizeChars;
+  }
+
+  return chunks;
+};
+
+/**
  * Checks if file exists in a directory
  * @param dir directory to check if file exists
  * @param fileName filename to check
