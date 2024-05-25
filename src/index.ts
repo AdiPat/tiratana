@@ -92,36 +92,28 @@ function getAllFiles(dir: Path): Path[] | null {
  * */
 function getAllValidFiles(dir: Path): Path[] | null {
   try {
-    const dirents = fs.readdirSync(dir, { withFileTypes: true });
-    let filePaths: Path[] = [];
+    const allFiles = getAllFiles(dir);
 
-    dirents.forEach((dirent) => {
-      if (dirent.isDirectory()) {
-        if (IGNORE_DIRECTORIES.includes(dirent.name)) {
-          console.log("tiratana: ignoring directory ", dirent.name);
-          return;
+    if (!allFiles) {
+      throw new Error("failed to get all files in directory");
+    }
+
+    const filteredFiles = allFiles.filter((filePath) => {
+      const ignoreByExtension = !shouldIgnoreFileByExtension(filePath);
+      let ignoreByDirectory = false;
+
+      IGNORE_DIRECTORIES.forEach((dir) => {
+        const fileName = path.basename(filePath);
+        const fileExists = fileExistsInDirectory(dir, fileName);
+        if (fileExists) {
+          ignoreByDirectory = true;
         }
+      });
 
-        const files = getAllValidFiles(path.join(dir, dirent.name));
-
-        if (!files) {
-          console.error("failed to get all files in directory");
-          return null;
-        }
-
-        const filteredFiles = files.filter(
-          (filePath) => !shouldIgnoreFileByExtension(filePath)
-        );
-
-        filePaths = filePaths.concat(filteredFiles);
-      } else {
-        if (!shouldIgnoreFileByExtension(dirent.name)) {
-          filePaths.push(path.join(dir, dirent.name));
-        }
-      }
+      return !(ignoreByDirectory || ignoreByExtension);
     });
 
-    return filePaths;
+    return filteredFiles;
   } catch (err) {
     console.error("failed to get all files in directory", err);
     return null;
