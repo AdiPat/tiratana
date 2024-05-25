@@ -252,9 +252,12 @@ async function run(): Promise<void> {
         console.error(`tiratana: failed to process ${sourceFile}`, err);
       }
     }
+
     console.log(
       `tiratana: processed ${files.length} files in ${args.directory}.`
     );
     return;
   }
 }
+
+run();
