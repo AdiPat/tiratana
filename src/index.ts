@@ -240,7 +240,7 @@ async function run(): Promise<void> {
 
     console.log(`tiratana: found ${files.length} files in ${args.directory}`);
 
-    files.forEach(async (sourceFile) => {
+    for (const sourceFile of files) {
       try {
         const report = await generateReport(sourceFile);
         const reportFile = createEmptyReport(sourceFile);
@@ -251,7 +251,7 @@ async function run(): Promise<void> {
       } catch (err) {
         console.error(`tiratana: failed to process ${sourceFile}`, err);
       }
-    });
+    }
     console.log(
       `tiratana: processed ${files.length} files in ${args.directory}.`
     );
