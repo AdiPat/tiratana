@@ -271,19 +271,18 @@ async function initArgs(): Promise<TArgs> {
  *
  */
 function validateArgs(args: TArgs): void {
-  if (
-    !(
-      args.clear &&
-      args.directory &&
-      !args.file_path &&
-      !args.all &&
-      !args.individual
-    )
-  ) {
+  if (args.clear) {
+    if (!(args.directory && args.directory != "")) {
+      console.error("tiratana: no directory provided. Exiting.");
+      process.exit(1);
+    }
+
+    if (args.all || args.file_path || args.individual) {
     console.log(
       "tiratana: clear cannot be passed with other arguments except directory. Exiting.  "
     );
     process.exit(1);
+    }
   }
 
   // if clear is passed alone, then it's a valid combination of arguments
