@@ -1,0 +1,30 @@
+{
+  "name": "tiratana",
+  "version": "1.0.0",
+  "description": "Tiratana is a CLI tool that generates a codebase report.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "ts-node src/index.ts",
+    "build": "tsc"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/AdiPat/tiratana.git"
+  },
+  "keywords": [
+    "ai",
+    "developer",
+    "tools"
+  ],
+  "author": "Aditya Patange",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/AdiPat/tiratana/issues"
+  },
+  "homepage": "https://github.com/AdiPat/tiratana#readme",
+  "devDependencies": {
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.5"
+  }
+}
