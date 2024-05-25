@@ -39,8 +39,18 @@ function getAllFiles(dir: Path): Path[] {
  * @param sourceFile
  * @returns The path to the newly created report file.
  */
-function createEmptyReport(sourceFile: Path): Path {
-  return "";
+function createEmptyReport(sourceFile: Path): Path | null {
+  try {
+    const dir = path.dirname(sourceFile);
+    const baseName = path.basename(sourceFile, path.extname(sourceFile);  
+    const reportFile = path.join(dir, `${baseName}.report.txt`);
+    fs.writeFileSync(reportFile, '');
+    return reportFile;
+  } catch(err) {
+    console.error("tiratana: failed to create an empty report. ", err);
+    return null;
+  }
+
 }
 
 /**
