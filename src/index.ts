@@ -153,18 +153,38 @@ function getAllValidFiles(dir: Path): Path[] | null {
 }
 
 /**
+ * Generates the report file path. 
+ * @param sourceFile
+ * @returns The path to the report file for given source file.
+ */
+function getReportFilePath(sourceFile: Path): Path | null {
+  try {
+    const dir = path.dirname(sourceFile);
+    const baseName = path.basename(sourceFile, path.extname(sourceFile));
+    const reportFile = path.join(dir, `${baseName}.report.txt`);
+    return reportFile;
+  } catch (err) {
+    console.error("tiratana: failed to create an empty report. ", err);
+    return null;
+  }
+}
+
+/**
  * Creates an empty report file in the same directory as the source file.
  * @param sourceFile
  * @returns The path to the newly created report file.
  */
 function createEmptyReport(sourceFile: Path): Path | null {
   try {
-    const dir = path.dirname(sourceFile);
-    const baseName = path.basename(sourceFile, path.extname(sourceFile));
-    const reportFile = path.join(dir, `${baseName}.report.txt`);
+    const reportFilePath = getReportFilePath(sourceFile);
+
+    if(!reportFilePath) {
+      throw new Error("failed to get report file path");
+    }
+    
     const report = "";
-    writeReport(report, reportFile);
-    return reportFile;
+    writeReport(report, reportFilePath);
+    return reportFilePath;
   } catch (err) {
     console.error("tiratana: failed to create an empty report. ", err);
     return null;
@@ -219,7 +239,6 @@ async function generateReport(sourceFile: Path): Promise<string> {
           If this is not a valid source file or you are unsure, just return "Not a valid code file.". \n\n" +
           File Content: ${chunk}`,
       });
-      console.log("rssult:", result);
       results.push(result.text);
     }
 
@@ -281,7 +300,6 @@ async function initArgs(): Promise<TArgs> {
  *
  */
 function validateArgs(args: TArgs): void {
-  console.log({ args });
   if (args.clear) {
     if (!(args.directory && args.directory != "")) {
       console.error("tiratana: no directory provided. Exiting.");
