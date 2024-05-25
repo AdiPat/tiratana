@@ -42,15 +42,15 @@ function getAllFiles(dir: Path): Path[] {
 function createEmptyReport(sourceFile: Path): Path | null {
   try {
     const dir = path.dirname(sourceFile);
-    const baseName = path.basename(sourceFile, path.extname(sourceFile);  
+    const baseName = path.basename(sourceFile, path.extname(sourceFile));
     const reportFile = path.join(dir, `${baseName}.report.txt`);
-    fs.writeFileSync(reportFile, '');
+    const report = "";
+    writeReport(report, reportFile);
     return reportFile;
-  } catch(err) {
+  } catch (err) {
     console.error("tiratana: failed to create an empty report. ", err);
     return null;
   }
-
 }
 
 /**
@@ -137,10 +137,9 @@ async function run(): Promise<void> {
       const reportFile = createEmptyReport(sourceFile);
       const report = `tiratana: found ${files.length} files.`;
 
-      if(reportFile) {
+      if (reportFile) {
         writeReport(report, reportFile);
       }
-      
     } catch (err) {
       console.error(`tiratana: failed to process ${sourceFile}`, err);
     }
