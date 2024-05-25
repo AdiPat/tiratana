@@ -302,21 +302,23 @@ function clearReports(directory: Path): number {
     const files = getAllFiles(directory);
 
     if (!files) {
-      throw new Error("failed to clear reports (system error)");
+      throw new Error("failed to get all files in directory");
     }
 
-    if (files.length == 0) {
+    const reportFiles = files?.filter((file) => file.endsWith(".report.txt"));
+
+    if (reportFiles.length == 0) {
       console.log(`tiratana: no report files found in ${directory}`);
       return 0;
     }
 
-    files.forEach((file) => {
+    reportFiles.forEach((file) => {
       if (file.endsWith(".report.txt")) {
         fs.unlinkSync(path.join(directory, file));
       }
     });
 
-    return files.length;
+    return reportFiles?.length;
   } catch (err) {
     console.error("tiratana: failed to clear reports", err);
     return 0;
