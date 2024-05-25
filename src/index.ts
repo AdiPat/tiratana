@@ -58,7 +58,22 @@ function createEmptyReport(sourceFile: Path): Path | null {
  * @param report The report to write.
  * @param reportFile The file to write the report to.
  */
-function writeReport(report: string, reportFile: Path): void {}
+function writeReport(report: string, reportFile: Path): void {
+  try {
+    // NOTE: although this is just an abstraction over one function call,
+    // we want to have custom logic in here for future
+    // things like templating and file formats, etc.
+    if (!report) {
+      console.error("tiratana: no report supplied. ");
+      return;
+    }
+
+    fs.writeFileSync(reportFile, report);
+  } catch (err) {
+    console.error("tiratana: failed to create an empty report. ", err);
+    return;
+  }
+}
 
 /*
  *
