@@ -40,7 +40,7 @@ const shouldIgnoreFileByExtension = (filePath: Path): boolean => {
 
 /**
  *
- * Gets all the file paths in a directory.
+ * Gets all the file paths in a directory (includes ignored files)
  * @param dir The directory to search.
  * @returns An array of file paths.
  *
@@ -52,12 +52,46 @@ function getAllFiles(dir: Path): Path[] | null {
 
     dirents.forEach((dirent) => {
       if (dirent.isDirectory()) {
+        const files = getAllFiles(path.join(dir, dirent.name));
+
+        if (!files) {
+          console.error("failed to get all files in directory");
+          return null;
+        }
+
+        filePaths = filePaths.concat(files);
+      } else {
+        filePaths.push(path.join(dir, dirent.name));
+      }
+    });
+
+    return filePaths;
+  } catch (err) {
+    console.error("failed to get all files in directory", err);
+    return null;
+  }
+}
+
+/**
+ *
+ * Gets all valid files (doesn't include ignored files)
+ * @param dir The directory to search.
+ * @returns An array of file paths.
+ *
+ * */
+function getAllValidFiles(dir: Path): Path[] | null {
+  try {
+    const dirents = fs.readdirSync(dir, { withFileTypes: true });
+    let filePaths: Path[] = [];
+
+    dirents.forEach((dirent) => {
+      if (dirent.isDirectory()) {
         if (IGNORE_DIRECTORIES.includes(dirent.name)) {
           console.log("tiratana: ignoring directory ", dirent.name);
           return;
         }
 
-        const files = getAllFiles(path.join(dir, dirent.name));
+        const files = getAllValidFiles(path.join(dir, dirent.name));
 
         if (!files) {
           console.error("failed to get all files in directory");
@@ -307,7 +341,7 @@ async function run(): Promise<void> {
   }
 
   if (args.all) {
-    const files = getAllFiles(args.directory);
+    const files = getAllValidFiles(args.directory);
 
     if (!files) {
       console.log(
