@@ -156,6 +156,7 @@ async function initArgs(): Promise<TArgs> {
     .option("directory", {
       alias: "d",
       type: "string",
+      demandOption: true,
       describe: "The directory to process",
     })
     .option("all", {
@@ -204,20 +205,20 @@ function validateArgs(args: TArgs): void {
   if (
     !(
       args.clear &&
-      !args.directory &&
+      args.directory &&
       !args.file_path &&
       !args.all &&
       !args.individual
     )
   ) {
     console.log(
-      "tiratana: clear cannot be passed with other arguments. Exiting.  "
+      "tiratana: clear cannot be passed with other arguments except directory. Exiting.  "
     );
     process.exit(1);
   }
 
   // if clear is passed alone, then it's a valid combination of arguments
-  if (args.clear) {
+  if (args.clear && args.directory && args.directory != "") {
     return;
   }
 
@@ -243,6 +244,37 @@ function validateArgs(args: TArgs): void {
       "tiratana: file_path provided without individual flag. Exiting."
     );
     process.exit(1);
+  }
+}
+
+/**
+ * Deletes all existing report files.
+ * @param directory The directory to clear reports from.
+ * @returns number the count of reports cleared
+ */
+function clearReports(directory: Path): number {
+  try {
+    const files = getAllFiles(directory);
+
+    if (!files) {
+      throw new Error("failed to clear reports (system error)");
+    }
+
+    if (files.length == 0) {
+      console.log(`tiratana: no report files found in ${directory}`);
+      return 0;
+    }
+
+    files.forEach((file) => {
+      if (file.endsWith(".report.txt")) {
+        fs.unlinkSync(path.join(directory, file));
+      }
+    });
+
+    return files.length;
+  } catch (err) {
+    console.error("tiratana: failed to clear reports", err);
+    return 0;
   }
 }
 
