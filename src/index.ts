@@ -18,6 +18,7 @@ interface TArgs {
   all?: boolean;
   individual?: boolean;
   file_path?: string;
+  clear?: boolean;
 }
 
 /**
@@ -155,7 +156,6 @@ async function initArgs(): Promise<TArgs> {
     .option("directory", {
       alias: "d",
       type: "string",
-      demandOption: true,
       describe: "The directory to process",
     })
     .option("all", {
@@ -176,6 +176,12 @@ async function initArgs(): Promise<TArgs> {
       default: "",
       describe: "The path of a specific file to process",
     })
+    .option("clear", {
+      alias: "c",
+      type: "boolean",
+      default: false,
+      describe: "Clear all reports in the directory",
+    })
     .parse();
 
   return {
@@ -183,6 +189,7 @@ async function initArgs(): Promise<TArgs> {
     all: argv.all as boolean,
     individual: argv.individual as boolean,
     file_path: argv.file_path as string,
+    clear: argv.clear as boolean,
   };
 }
 
@@ -194,6 +201,26 @@ async function initArgs(): Promise<TArgs> {
  *
  */
 function validateArgs(args: TArgs): void {
+  if (
+    !(
+      args.clear &&
+      !args.directory &&
+      !args.file_path &&
+      !args.all &&
+      !args.individual
+    )
+  ) {
+    console.log(
+      "tiratana: clear cannot be passed with other arguments. Exiting.  "
+    );
+    process.exit(1);
+  }
+
+  // if clear is passed alone, then it's a valid combination of arguments
+  if (args.clear) {
+    return;
+  }
+
   if (args.all && !args.directory) {
     console.log("tiratana: no directory provided. Exiting.");
     process.exit(1);
