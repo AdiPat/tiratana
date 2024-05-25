@@ -2,6 +2,8 @@ import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 import fs from "fs";
 import path from "path";
+import { openai } from "@ai-sdk/openai";
+import { generateText } from "ai";
 
 type Path = string;
 
@@ -82,7 +84,25 @@ function writeReport(report: string, reportFile: Path): void {
  * @returns void
  *
  */
-function generateReport(sourceFile: Path): void {}
+async function generateReport(sourceFile: Path): Promise<string> {
+  try {
+    const content = fs.readFileSync(sourceFile, "utf8");
+    console.log(
+      `tiratana: found ${content.length} characters in ${sourceFile}`
+    );
+    const result = await generateText({
+      model: openai("gpt-3.5-turbo-instruct"),
+      maxTokens: 4096,
+      prompt: `If this is code written in a known programming language, explain each line of this file. \n" +
+        If this is not a valid source file or you are unsure, just return "Not a valid code file.". \n\n" +
+        File Content: ${content}`,
+    });
+    return result.text;
+  } catch (err) {
+    console.error("tiratana: failed to generate report", err);
+    return "Failed to generate report.";
+  }
+}
 
 async function initArgs(): Promise<TArgs> {
   const argv = await yargs(hideBin(process.argv))
