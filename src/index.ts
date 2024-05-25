@@ -119,25 +119,30 @@ async function generateReport(sourceFile: Path): Promise<string> {
 async function initArgs(): Promise<TArgs> {
   const argv = await yargs(hideBin(process.argv))
     .option("directory", {
+      alias: "d",
       type: "string",
       demandOption: true,
       describe: "The directory to process",
     })
     .option("all", {
+      alias: "a",
       type: "boolean",
       default: false,
       describe: "Process all files",
     })
     .option("individual", {
+      alias: "i",
       type: "boolean",
       default: false,
       describe: "Generate individual reports",
     })
     .option("file_path", {
+      alias: "f",
       type: "string",
       default: "",
       describe: "The path of a specific file to process",
-    }).argv;
+    })
+    .parse();
 
   return {
     directory: argv.directory as string,
