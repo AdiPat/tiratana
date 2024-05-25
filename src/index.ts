@@ -21,19 +21,31 @@ interface TArgs {
  * @returns An array of file paths.
  *
  * */
-function getAllFiles(dir: Path): Path[] {
-  const dirents = fs.readdirSync(dir, { withFileTypes: true });
-  let filePaths: string[] = [];
+function getAllFiles(dir: Path): Path[] | null {
+  try {
+    const dirents = fs.readdirSync(dir, { withFileTypes: true });
+    let filePaths: Path[] = [];
 
-  dirents.forEach((dirent) => {
-    if (dirent.isDirectory()) {
-      filePaths = filePaths.concat(getAllFiles(path.join(dir, dirent.name)));
-    } else {
-      filePaths.push(path.join(dir, dirent.name));
-    }
-  });
+    dirents.forEach((dirent) => {
+      if (dirent.isDirectory()) {
+        const files = getAllFiles(path.join(dir, dirent.name));
 
-  return filePaths;
+        if (!files) {
+          console.error("failed to get all files in directory");
+          return null;
+        }
+
+        filePaths = filePaths.concat(files);
+      } else {
+        filePaths.push(path.join(dir, dirent.name));
+      }
+    });
+
+    return filePaths;
+  } catch (err) {
+    console.error("failed to get all files in directory", err);
+    return null;
+  }
 }
 
 /**
@@ -192,6 +204,18 @@ async function run(): Promise<void> {
 
   if (args.all) {
     const files = getAllFiles(args.directory);
+
+    if (!files) {
+      console.log(
+        `tiratana: failed to fetch files ${args.directory} (system error)`
+      );
+      return;
+    }
+
+    if (files.length == 0) {
+      console.log(`tiratana: no files found in ${args.directory}`);
+      return;
+    }
 
     files.forEach(async (sourceFile) => {
       try {
