@@ -1,5 +1,7 @@
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
+import fs from "fs";
+import path from "path";
 
 type Path = string;
 
@@ -18,7 +20,18 @@ interface TArgs {
  *
  * */
 function getAllFiles(dir: Path): Path[] {
-  return [];
+  const dirents = fs.readdirSync(dir, { withFileTypes: true });
+  let filePaths: string[] = [];
+
+  dirents.forEach((dirent) => {
+    if (dirent.isDirectory()) {
+      filePaths = filePaths.concat(getAllFiles(path.join(dir, dirent.name)));
+    } else {
+      filePaths.push(path.join(dir, dirent.name));
+    }
+  });
+
+  return filePaths;
 }
 
 /**
