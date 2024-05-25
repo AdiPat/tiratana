@@ -1,4 +1,14 @@
+import yargs from "yargs";
+import { hideBin } from "yargs/helpers";
+
 type Path = string;
+
+interface TArgs {
+  directory: string;
+  all?: boolean;
+  individual?: boolean;
+  file_path?: string;
+}
 
 /**
  *
@@ -36,8 +46,52 @@ function writeReport(report: string, reportFile: Path): void {}
  */
 function generateReport(sourceFile: Path): void {}
 
-function run(directory: string): void {
-  const files = getAllFiles(directory);
+async function initArgs(): Promise<TArgs> {
+  const argv = await yargs(hideBin(process.argv))
+    .option("directory", {
+      type: "string",
+      demandOption: true,
+      describe: "The directory to process",
+    })
+    .option("all", {
+      type: "boolean",
+      default: false,
+      describe: "Process all files",
+    })
+    .option("individual", {
+      type: "boolean",
+      default: false,
+      describe: "Generate individual reports",
+    })
+    .option("file_path", {
+      type: "string",
+      default: "",
+      describe: "The path of a specific file to process",
+    }).argv;
+
+  return {
+    directory: argv.directory as string,
+    all: argv.all as boolean,
+    individual: argv.individual as boolean,
+    file_path: argv.file_path as string,
+  };
+}
+
+/**
+ *
+ * @param directory The directory to process.
+ * @returns void
+ */
+async function run(): void {
+  const args = await initArgs();
+
+  const { directory } = args;
+
+  if (!args.directory) {
+    console.log("tiratana: no directory provided. Exiting.");
+    process.exit(1);
+  }
+  const files = getAllFiles(args.directory);
 
   files.forEach((sourceFile) => {
     try {
