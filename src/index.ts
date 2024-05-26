@@ -183,7 +183,7 @@ function createEmptyReport(sourceFile: Path): Path | null {
   try {
     const reportFilePath = getReportFilePath(sourceFile);
 
-    if(!reportFilePath) {
+    if (!reportFilePath) {
       throw new Error("failed to get report file path");
     }
     
