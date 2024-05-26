@@ -89,13 +89,13 @@ const filterIgnoredFiles = (filePaths: Path[]): Path[] => {
     const fileExtension = path.extname(filePath);
     const fileDirectory = path.dirname(filePath);
 
-    const ignoreByExtension = IGNORE_EXTENSIONS.includes(fileExtension);
+    const ignoreByExtension = shouldIgnoreFileByExtension(filePath);
     const ignoreByDirectory = IGNORE_DIRECTORIES.some((dir) =>
       filePath.startsWith(dir)
     );
 
     // If the file should be ignored by extension or directory, return false to exclude it from the filtered list
-    return !(ignoreByExtension || ignoreByDirectory);
+    return ignoreByDirectory || ignoreByExtension ? false : true;
   });
 };
 
