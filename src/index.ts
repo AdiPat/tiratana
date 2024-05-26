@@ -9,7 +9,7 @@ import {
   getReportFilePath,
   writeReport,
 } from "./report-generator";
-import { Path, TArgs } from "./constants";
+import { Path, TArgs } from "./types";
 import { validateArgs } from "./utils";
 
 async function initArgs(): Promise<TArgs> {

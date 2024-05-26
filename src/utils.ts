@@ -1,6 +1,7 @@
 import fs from "fs";
 import path from "path";
-import { IGNORE_DIRECTORIES, IGNORE_EXTENSIONS, Path } from "./constants";
+import { IGNORE_DIRECTORIES, IGNORE_EXTENSIONS } from "./constants";
+import { TArgs, Path } from "./types";
 
 /**
  * Checks if a file should be ignored.

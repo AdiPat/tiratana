@@ -3,7 +3,7 @@ import path from "path";
 import { openai } from "@ai-sdk/openai";
 import { generateText } from "ai";
 import { filterIgnoredFiles, splitTextIntoChunks } from "./utils";
-import { Path } from "./constants";
+import { Path } from "./types";
 
 /**
  *
