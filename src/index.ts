@@ -450,3 +450,5 @@ async function run(): Promise<void> {
 }
 
 run();
+
+export { generateReport, writeReport, Path, TArgs };
