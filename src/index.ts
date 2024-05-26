@@ -400,10 +400,10 @@ async function run(): Promise<void> {
 
   if (args.file_path) {
     const report = await generateReport(args.file_path);
-    const reportFile = createEmptyReport(args.file_path);
+    const reportFilePath = getReportFilePath(args.file_path);
 
-    if (reportFile) {
-      writeReport(report, reportFile);
+    if (reportFilePath) {
+      writeReport(report, reportFilePath);
     }
 
     console.log(`tiratana: processed ${args.file_path}`);
@@ -430,11 +430,13 @@ async function run(): Promise<void> {
     for (const sourceFile of files) {
       try {
         const report = await generateReport(sourceFile);
-        const reportFile = createEmptyReport(sourceFile);
+        const reportFilePath = getReportFilePath(sourceFile);
 
-        if (reportFile) {
-          writeReport(report, reportFile);
+        if (reportFilePath) {
+          writeReport(report, reportFilePath);
         }
+
+        console.log(`tiratana: processed ${sourceFile}`);
       } catch (err) {
         console.error(`tiratana: failed to process ${sourceFile}`, err);
       }
