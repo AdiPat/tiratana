@@ -330,8 +330,10 @@ function validateArgs(args: TArgs): void {
   }
 
   if (!args.directory) {
+    if (!(args.individual && args.file_path)) {
     console.log("tiratana: no directory provided. Exiting.");
     process.exit(1);
+    }
   }
 
   if (args.all && args.individual) {
