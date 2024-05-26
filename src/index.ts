@@ -158,7 +158,7 @@ function getAllValidFiles(dir: Path): Path[] | null {
 }
 
 /**
- * Generates the report file path. 
+ * Generates the report file path.
  * @param sourceFile
  * @returns The path to the report file for given source file.
  */
@@ -186,7 +186,7 @@ function createEmptyReport(sourceFile: Path): Path | null {
     if (!reportFilePath) {
       throw new Error("failed to get report file path");
     }
-    
+
     const report = "";
     writeReport(report, reportFilePath);
     return reportFilePath;
@@ -331,8 +331,8 @@ function validateArgs(args: TArgs): void {
 
   if (!args.directory) {
     if (!(args.individual && args.file_path)) {
-    console.log("tiratana: no directory provided. Exiting.");
-    process.exit(1);
+      console.log("tiratana: no directory provided. Exiting.");
+      process.exit(1);
     }
   }
 
