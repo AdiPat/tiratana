@@ -3,8 +3,7 @@ import path from "path";
 import { openai } from "@ai-sdk/openai";
 import { generateText } from "ai";
 import { filterIgnoredFiles, splitTextIntoChunks } from "./utils";
-
-type Path = string;
+import { Path } from "./constants";
 
 /**
  *
@@ -161,6 +160,39 @@ async function generateReport(sourceFile: Path): Promise<string> {
   }
 }
 
+/**
+ * Deletes all existing report files.
+ * @param directory The directory to clear reports from.
+ * @returns number the count of reports cleared
+ */
+function clearReports(directory: Path): number {
+  try {
+    const files = getAllFiles(directory);
+
+    if (!files) {
+      throw new Error("failed to get all files in directory");
+    }
+
+    const reportFiles = files?.filter((file) => file.endsWith(".report.txt"));
+
+    if (reportFiles.length == 0) {
+      console.log(`tiratana: no report files found in ${directory}`);
+      return 0;
+    }
+
+    reportFiles.forEach((file) => {
+      if (file.endsWith(".report.txt")) {
+        fs.unlinkSync(path.join(directory, file));
+      }
+    });
+
+    return reportFiles?.length;
+  } catch (err) {
+    console.error("tiratana: failed to clear reports", err);
+    return 0;
+  }
+}
+
 export {
   getAllFiles,
   getAllValidFiles,
@@ -168,4 +200,5 @@ export {
   createEmptyReport,
   writeReport,
   generateReport,
+  clearReports,
 };

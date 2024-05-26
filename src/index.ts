@@ -5,17 +5,14 @@ import { hideBin } from "yargs/helpers";
 import fs from "fs";
 import path from "path";
 import {
+  clearReports,
   generateReport,
   getAllFiles,
   getAllValidFiles,
   getReportFilePath,
   writeReport,
 } from "./report-generator";
-
-type Path = string;
-
-const IGNORE_DIRECTORIES = [".git", "node_modules", "dist", "build"];
-const IGNORE_EXTENSIONS = [".report.txt", ".json", ".yaml"];
+import { Path } from "./constants";
 
 interface TArgs {
   directory: string;
@@ -120,39 +117,6 @@ function validateArgs(args: TArgs): void {
       "tiratana: file_path provided without individual flag. Exiting."
     );
     process.exit(1);
-  }
-}
-
-/**
- * Deletes all existing report files.
- * @param directory The directory to clear reports from.
- * @returns number the count of reports cleared
- */
-function clearReports(directory: Path): number {
-  try {
-    const files = getAllFiles(directory);
-
-    if (!files) {
-      throw new Error("failed to get all files in directory");
-    }
-
-    const reportFiles = files?.filter((file) => file.endsWith(".report.txt"));
-
-    if (reportFiles.length == 0) {
-      console.log(`tiratana: no report files found in ${directory}`);
-      return 0;
-    }
-
-    reportFiles.forEach((file) => {
-      if (file.endsWith(".report.txt")) {
-        fs.unlinkSync(path.join(directory, file));
-      }
-    });
-
-    return reportFiles?.length;
-  } catch (err) {
-    console.error("tiratana: failed to clear reports", err);
-    return 0;
   }
 }
 
