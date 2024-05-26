@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 import fs from "fs";
@@ -286,6 +287,7 @@ async function initArgs(): Promise<TArgs> {
       default: false,
       describe: "Clear all reports in the directory",
     })
+    .help()
     .parse();
 
   return {
