@@ -8,7 +8,13 @@ Tiratana is a CLI tool that generates codebase reports.
 
 # Usage 
 
+On Linux / Mac OSX:
+
 `export OPENAI_API_KEY="<your api key>"`
+
+On Windows: 
+
+`set OPENAI_API_KEY="<your api key>"`
 
 You can get an Open AI API key at [Open AI Platform](https://platform.openai.com/). 
 
