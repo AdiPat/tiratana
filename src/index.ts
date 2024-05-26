@@ -259,7 +259,7 @@ async function initArgs(): Promise<TArgs> {
     .option("directory", {
       alias: "d",
       type: "string",
-      demandOption: true,
+      demandOption: false,
       describe: "The directory to process",
     })
     .option("all", {
