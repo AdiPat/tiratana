@@ -8,6 +8,7 @@
     "start": "ts-node src/index.ts",
     "build": "tsc"
   },
+  "types": "dist/index.d.ts",
   "repository": {
     "type": "git",
     "url": "git+ssh://git@github.com/AdiPat/tiratana.git"
