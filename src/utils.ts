@@ -1,10 +1,6 @@
 import fs from "fs";
 import path from "path";
-
-type Path = string;
-
-const IGNORE_DIRECTORIES = [".git", "node_modules", "dist", "build"];
-const IGNORE_EXTENSIONS = [".report.txt", ".json", ".yaml"];
+import { IGNORE_DIRECTORIES, IGNORE_EXTENSIONS, Path } from "./constants";
 
 /**
  * Checks if a file should be ignored.
@@ -84,9 +80,64 @@ const filterIgnoredFiles = (filePaths: Path[]): Path[] => {
   });
 };
 
+/**
+ *
+ * Validate command-line arguments
+ * @param args The arguments to validate.
+ * @returns void
+ *
+ */
+function validateArgs(args: TArgs): void {
+  if (args.clear) {
+    if (!(args.directory && args.directory != "")) {
+      console.error("tiratana: no directory provided. Exiting.");
+      process.exit(1);
+    }
+
+    if (args.all || args.file_path || args.individual) {
+      console.log(
+        "tiratana: clear cannot be passed with other arguments except directory. Exiting.  "
+      );
+      process.exit(1);
+    }
+  }
+
+  // if clear is passed alone, then it's a valid combination of arguments
+  if (args.clear && args.directory && args.directory != "") {
+    return;
+  }
+
+  if (args.all && !args.directory) {
+    console.log("tiratana: no directory provided. Exiting.");
+    process.exit(1);
+  }
+
+  if (!args.directory) {
+    if (!(args.individual && args.file_path)) {
+      console.log("tiratana: no directory provided. Exiting.");
+      process.exit(1);
+    }
+  }
+
+  if (args.all && args.individual) {
+    console.log(
+      "tiratana: cannot process all and individual files at the same time. Exiting."
+    );
+    process.exit(1);
+  }
+
+  if (args.file_path && !args.individual) {
+    console.log(
+      "tiratana: file_path provided without individual flag. Exiting."
+    );
+    process.exit(1);
+  }
+}
+
 export {
   shouldIgnoreFileByExtension,
   splitTextIntoChunks,
   fileExistsInDirectory,
   filterIgnoredFiles,
+  validateArgs,
 };
