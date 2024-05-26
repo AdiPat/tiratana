@@ -33,6 +33,11 @@ const shouldIgnoreFileByExtension = (filePath: Path): boolean => {
     if (filePath.endsWith(ext)) {
       shouldIgnore = true;
     }
+
+    // for .report.txt files, we should also ignore files that contain the extension
+    if (filePath.includes(ext)) {
+      shouldIgnore = true;
+    }
   });
 
   return shouldIgnore;
