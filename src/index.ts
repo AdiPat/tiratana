@@ -10,8 +10,8 @@ dotenv.config();
 
 type Path = string;
 
-const IGNORE_DIRECTORIES = [".git", "node_modules"];
-const IGNORE_EXTENSIONS = [".report.txt"];
+const IGNORE_DIRECTORIES = [".git", "node_modules", "dist", "build"];
+const IGNORE_EXTENSIONS = [".report.txt", ".json", ".yaml"];
 
 interface TArgs {
   directory: string;
