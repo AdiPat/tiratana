@@ -2,6 +2,8 @@
 import "./config";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
+import path from "path";
+import fs from "fs";
 import {
   clearReports,
   generateReport,
@@ -10,7 +12,22 @@ import {
   writeReport,
 } from "./report-generator";
 import { Path, TArgs } from "./types";
-import { validateArgs } from "./utils";
+import { validateArgs, parseGitignore } from "./utils";
+import { IGNORE_DIRECTORIES, IGNORE_EXTENSIONS } from "./constants";
+
+const gitignorePath = path.resolve(process.cwd(), ".gitignore");
+
+let gitignoreDirectories: string[] = [];
+let gitignoreExtensions: string[] = [];
+
+if (fs.existsSync(gitignorePath)){
+  const gitignore = parseGitignore(gitignorePath);
+  gitignoreDirectories = gitignore.directories;
+  gitignoreExtensions = gitignore.extensions;
+}
+
+const ALL_IGNORE_DIRECTORIES = [...IGNORE_DIRECTORIES, ...gitignoreDirectories];
+const ALL_IGNORE_EXTENSIONS = [...IGNORE_EXTENSIONS, ...gitignoreExtensions];
 
 async function initArgs(): Promise<TArgs> {
   const argv = await yargs(hideBin(process.argv))
@@ -85,7 +102,7 @@ async function run(): Promise<void> {
   }
 
   if (args.all) {
-    const files = getAllValidFiles(args.directory);
+    const files = getAllValidFiles(args.directory, ALL_IGNORE_DIRECTORIES, ALL_IGNORE_EXTENSIONS);
 
     if (!files) {
       console.log(

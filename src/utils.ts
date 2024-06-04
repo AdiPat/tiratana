@@ -8,10 +8,10 @@ import { TArgs, Path } from "./types";
  * @param filePath File path to check if it should be ignored
  * @returns true if the file should be ignored
  */
-const shouldIgnoreFileByExtension = (filePath: Path): boolean => {
+const shouldIgnoreFileByExtension = (filePath: Path, ignoreExtensions: string[]): boolean => {
   let shouldIgnore = false;
 
-  IGNORE_EXTENSIONS.forEach((ext) => {
+  ignoreExtensions.forEach((ext) => {
     if (filePath.endsWith(ext)) {
       shouldIgnore = true;
     }
@@ -62,7 +62,7 @@ const fileExistsInDirectory = (dir: string, fileName: string): boolean => {
  * @param filePaths File paths to check
  * @returns Path array of file paths that are not ignored
  */
-const filterIgnoredFiles = (filePaths: Path[]): Path[] => {
+const filterIgnoredFiles = (filePaths: Path[], ignoreDirectories: string[], ignoreExtensions: string[]): Path[] => {
   if (!filePaths) {
     return [];
   }
@@ -71,8 +71,8 @@ const filterIgnoredFiles = (filePaths: Path[]): Path[] => {
     const fileExtension = path.extname(filePath);
     const fileDirectory = path.dirname(filePath);
 
-    const ignoreByExtension = shouldIgnoreFileByExtension(filePath);
-    const ignoreByDirectory = IGNORE_DIRECTORIES.some((dir) =>
+    const ignoreByExtension = shouldIgnoreFileByExtension(filePath, ignoreExtensions);
+    const ignoreByDirectory = ignoreDirectories.some((dir) =>
       filePath.startsWith(dir)
     );
 
@@ -135,10 +135,50 @@ function validateArgs(args: TArgs): void {
   }
 }
 
+function parseGitignore(gitignorePath: string): { directories: string[], extensions: string[] } {
+  try {
+    const ignoreContent = fs.readFileSync(gitignorePath, "utf8");
+    const ignoreLines = ignoreContent.split("\n");
+
+    const directories: string[] = [];
+    const extensions: string[] = [];
+
+    for(const line of ignoreLines){
+      const trimmedLine = line.trim();
+
+      if(trimmedLine === "" || trimmedLine.startsWith("#")){
+        // Skip empty lines and comments
+        continue;
+      }
+      if(trimmedLine.startsWith("/")){
+        // Ignore root-level files or directories
+        if(trimmedLine.endsWith("/")){
+          directories.push(trimmedLine.slice(1, -1)); //Directory pattern
+        } else{
+          extensions.push(path.extname(trimmedLine.slice(1))); //File extension pattern
+        }
+      } else{
+        if(trimmedLine.endsWith("/")){
+          directories.push(trimmedLine.slice(0, -1));
+        } else{
+          extensions.push(path.extname(trimmedLine));
+        }
+      }
+    }
+
+    return { directories, extensions };
+  } catch (err) {
+    console.error("Failed to read or parse .gitignore file", err);
+    return {directories: [], extensions: []}; //Return empty arrays in case of error
+  }
+
+}
+
 export {
   shouldIgnoreFileByExtension,
   splitTextIntoChunks,
   fileExistsInDirectory,
   filterIgnoredFiles,
   validateArgs,
+  parseGitignore, // Exporting the new function
 };

@@ -46,7 +46,7 @@ function getAllFiles(dir: Path): Path[] | null {
  * @returns An array of file paths.
  *
  * */
-function getAllValidFiles(dir: Path): Path[] | null {
+function getAllValidFiles(dir: Path, ignoreDirectories: string[], ignoreExtensions: string[]): Path[] | null {
   try {
     const allFiles = getAllFiles(dir);
 
@@ -54,7 +54,7 @@ function getAllValidFiles(dir: Path): Path[] | null {
       throw new Error("failed to get all files in directory");
     }
 
-    const filteredFiles = filterIgnoredFiles(allFiles);
+    const filteredFiles = filterIgnoredFiles(allFiles, ignoreDirectories, ignoreExtensions);
 
     return filteredFiles;
   } catch (err) {
