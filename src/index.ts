@@ -10,7 +10,21 @@ import {
   writeReport,
 } from "./report-generator";
 import { Path, TArgs } from "./types";
-import { validateArgs } from "./utils";
+import { hr, prettyLogArgs, printHelp, validateArgs } from "./utils";
+import { Loader } from "./loader";
+import chalk from "chalk";
+
+async function printBanner() {
+  const bannerText = [
+    hr(),
+    "Tiratana 💎: Generate useful codebase reports easily!",
+    hr(),
+  ];
+
+  for (const line of bannerText) {
+    console.log(line);
+  }
+}
 
 async function initArgs(): Promise<TArgs> {
   const argv = await yargs(hideBin(process.argv))
@@ -44,16 +58,25 @@ async function initArgs(): Promise<TArgs> {
       default: false,
       describe: "Clear all reports in the directory",
     })
+    .option("verbose", {
+      alias: "v",
+      type: "boolean",
+      default: false,
+      describe: "Print verbose logs",
+    })
     .help()
     .parse();
 
-  return {
+  const args: TArgs = {
     directory: argv.directory as string,
     all: argv.all as boolean,
     individual: argv.individual as boolean,
     file_path: argv.file_path as string,
     clear: argv.clear as boolean,
+    verbose: argv.verbose as boolean,
   };
+
+  return args;
 }
 
 /**
@@ -62,7 +85,19 @@ async function initArgs(): Promise<TArgs> {
  * @returns void
  */
 async function run(): Promise<void> {
+  await printBanner();
+
   const args = await initArgs();
+
+  if (args.verbose) {
+    Loader.load(
+      () => {
+        prettyLogArgs(args);
+      },
+      2000,
+      "Processing args..."
+    );
+  }
 
   validateArgs(args);
 
@@ -85,7 +120,20 @@ async function run(): Promise<void> {
   }
 
   if (args.all) {
-    const files = getAllValidFiles(args.directory);
+    let files: Path[] | null = [];
+
+    try {
+      files = getAllValidFiles(args.directory);
+
+      if (!files || files.length == 0) {
+        throw new Error("unexpected error: failed to fetch files.");
+      }
+    } catch (err) {
+      console.error(
+        `tiratana: failed to fetch files ${args.directory} (system error).`
+      );
+      return;
+    }
 
     if (!files) {
       console.log(
