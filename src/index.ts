@@ -90,7 +90,7 @@ async function run(): Promise<void> {
   await initConfig(verbose);
 
   if (args.verbose) {
-    Loader.load(
+    await Loader.load(
       () => {
         prettyLogArgs(args);
       },
