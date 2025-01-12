@@ -2,6 +2,7 @@ import fs from "fs";
 import path from "path";
 import { IGNORE_DIRECTORIES, IGNORE_EXTENSIONS } from "./constants";
 import { TArgs, Path } from "./types";
+import chalk from "chalk";
 
 /**
  * Checks if a file should be ignored.
@@ -83,15 +84,69 @@ const filterIgnoredFiles = (filePaths: Path[]): Path[] => {
 
 /**
  *
+ * Print help message
+ * @returns void
+ */
+export function printHelp(): void {
+  const helpLines = [
+    "Usage: tiratana [options]",
+    "Options:",
+    "  --directory <dir>  Directory to process",
+    "  --all              Process all files in directory",
+    "  --individual       Generate individual reports",
+    "  --file_path <path> Path of a specific file to process",
+    "  --clear            Clear all reports in the directory",
+    "  --help             Print this help message\n",
+  ];
+
+  for (const line of helpLines) {
+    console.log(chalk.gray(line));
+  }
+}
+
+export function hr(): string {
+  return "-".repeat(80);
+}
+
+export function prettyLogArgs(args: TArgs): void {
+  const lines = [
+    hr(),
+    chalk.yellow("💎 Tiratana: Launched with args: 🚀"),
+    chalk.blue(`  - args.directory: '${args.directory}'`),
+    chalk.blue(`  - args.all: '${args.all}'`),
+    chalk.blue(`  - args.individual: '${args.individual}'`),
+    chalk.blue(`  - args.file_path: '${args.file_path}'`),
+    chalk.blue(`  - args.clear: '${args.clear}'`),
+    chalk.blue(`  - args.verbose: '${args.verbose}'`),
+    hr(),
+  ];
+
+  for (const line of lines) {
+    console.log(line);
+  }
+}
+
+/**
+ *
  * Validate command-line arguments
  * @param args The arguments to validate.
  * @returns void
  *
  */
 function validateArgs(args: TArgs): void {
+  if (args && !args.directory) {
+    console.log(
+      chalk.redBright(
+        "\nError: No directory provided.\n- Please pass directory with -d or --directory.\n"
+      )
+    );
+    printHelp();
+    process.exit(1);
+  }
+
   if (args.clear) {
     if (!(args.directory && args.directory != "")) {
-      console.error("tiratana: no directory provided. Exiting.");
+      console.error("[tiratana] error: no directory provided.");
       process.exit(1);
     }
 
