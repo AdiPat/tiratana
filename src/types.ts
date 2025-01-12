@@ -4,6 +4,7 @@ interface TArgs {
   individual?: boolean;
   file_path?: string;
   clear?: boolean;
+  verbose?: boolean;
 }
 
 type Path = string;
