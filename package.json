@@ -4,8 +4,9 @@
   "description": "Tiratana is a CLI tool that generates a codebase report.",
   "main": "dist/index.js",
   "scripts": {
+    "build": "tsc",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node dist/index.js"
+    "start": "npm run build && node dist/index.js"
   },
   "types": "dist/index.d.ts",
   "repository": {
@@ -30,10 +31,12 @@
     "@types/node": "^20.12.12",
     "ts-node": "^10.9.2",
     "tsx": "^4.11.0",
-    "typescript": "^5.4.5"
+    "typescript": "^5.4.5",
+    "vitest": "^2.1.8"
   },
   "dependencies": {
     "@ai-sdk/openai": "^0.0.14",
+    "chalk": "^4.0.0",
     "@types/yargs": "^17.0.32",
     "ai": "^3.1.14",
     "dotenv": "^16.4.5",
