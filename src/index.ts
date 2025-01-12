@@ -1,9 +1,7 @@
 #!/usr/bin/env node
-import "./config";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 import {
-  clearReports,
   generateReport,
   getAllValidFiles,
   getReportFilePath,
@@ -12,7 +10,7 @@ import {
 import { Path, TArgs } from "./types";
 import { hr, prettyLogArgs, printHelp, validateArgs } from "./utils";
 import { Loader } from "./loader";
-import chalk from "chalk";
+import { initConfig } from "./config";
 
 async function printBanner() {
   const bannerText = [
@@ -72,7 +70,6 @@ async function initArgs(): Promise<TArgs> {
     all: argv.all as boolean,
     individual: argv.individual as boolean,
     file_path: argv.file_path as string,
-    clear: argv.clear as boolean,
     verbose: argv.verbose as boolean,
   };
 
@@ -88,6 +85,9 @@ async function run(): Promise<void> {
   await printBanner();
 
   const args = await initArgs();
+  const verbose = args.verbose;
+
+  await initConfig(verbose);
 
   if (args.verbose) {
     Loader.load(
