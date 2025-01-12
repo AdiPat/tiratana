@@ -101,12 +101,6 @@ async function run(): Promise<void> {
 
   validateArgs(args);
 
-  if (args.clear) {
-    console.log("tiratana: clearing reports");
-    const clearedReports = clearReports(args.directory);
-    console.log(`tiratana: cleared ${clearedReports} reports`);
-  }
-
   if (args.file_path) {
     const report = await generateReport(args.file_path);
     const reportFilePath = getReportFilePath(args.file_path);

@@ -116,7 +116,6 @@ export function prettyLogArgs(args: TArgs): void {
     chalk.blue(`  - args.all: '${args.all}'`),
     chalk.blue(`  - args.individual: '${args.individual}'`),
     chalk.blue(`  - args.file_path: '${args.file_path}'`),
-    chalk.blue(`  - args.clear: '${args.clear}'`),
     chalk.blue(`  - args.verbose: '${args.verbose}'`),
     hr(),
   ];
@@ -142,25 +141,6 @@ function validateArgs(args: TArgs): void {
     );
     printHelp();
     process.exit(1);
-  }
-
-  if (args.clear) {
-    if (!(args.directory && args.directory != "")) {
-      console.error("[tiratana] error: no directory provided.");
-      process.exit(1);
-    }
-
-    if (args.all || args.file_path || args.individual) {
-      console.log(
-        "tiratana: clear cannot be passed with other arguments except directory. Exiting.  "
-      );
-      process.exit(1);
-    }
-  }
-
-  // if clear is passed alone, then it's a valid combination of arguments
-  if (args.clear && args.directory && args.directory != "") {
-    return;
   }
 
   if (args.all && !args.directory) {

@@ -3,7 +3,6 @@ interface TArgs {
   all?: boolean;
   individual?: boolean;
   file_path?: string;
-  clear?: boolean;
   verbose?: boolean;
 }
 
