@@ -1,6 +1,6 @@
 {
   "name": "tiratana",
-  "version": "1.0.8",
+  "version": "1.1.0",
   "description": "Tiratana is a CLI tool that generates a codebase report.",
   "main": "dist/index.js",
   "scripts": {
@@ -41,7 +41,6 @@
     "ai": "^3.1.14",
     "chalk": "^4.0.0",
     "dotenv": "^16.4.5",
-    "tiratana": "^1.0.3",
     "unique-names-generator": "^4.7.1",
     "yargs": "^17.7.2",
     "zod": "^3.23.8"
