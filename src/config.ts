@@ -15,6 +15,7 @@ import chalk from "chalk";
 import { createInterface } from "readline";
 import { REQUIRED_ENV_VARIABLES } from "./constants";
 import readline from "readline";
+import { execSync } from "child_process";
 
 declare module "readline" {
   interface Interface {
@@ -122,8 +123,7 @@ export async function promptUserForEnvVariables(
           rl.stdoutMuted = true;
         });
 
-        (process.env as any)[env] = answer;
-
+        setEnvProperty(env, answer as string);
         console.log(chalk.green(`✅ Environment variable ${env} set.`));
       }
     }
@@ -151,5 +151,37 @@ export async function initConfig(verbose = false) {
 
   if (!status) {
     await promptUserForEnvVariables(verbose);
+  }
+}
+
+/** 
+ * Function to set environment variables.
+ * @param key The key of the environment variable.
+ * @param value The value of the environment variable.
+ * @returns void
+ */ 
+export function setEnvProperty(key: string, value: string): void {
+  process.env[key] = value;
+  console.log(chalk.green(`Environment variable ${key} set to ${value}`));
+
+  // Set environment variable for the current session
+  if (process.platform === "win32") {
+    execSync(`setx ${key} "${value}"`);
+  } else {
+    execSync(`export ${key}="${value}"`);
+  }
+}
+/**
+ * Loads the environment variables from a file.
+ * @param filePath The path to the environment file.
+ * @returns void
+ */
+export function loadEnvFromFile (filePath: string): void {
+  try {
+    dotenv.config({ path: filePath, override: true });
+    console.log(chalk.green(`✅ Environment variables loaded from ${filePath}`));
+  } catch (error : any) {
+    console.error(chalk.redBright(`❌ Error loading environment variables from ${filePath}`));
+    console.error(chalk.redBright(`❌ Error: ${error.message }`));
   }
 }

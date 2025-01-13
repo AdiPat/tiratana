@@ -27,3 +27,16 @@ export declare function promptUserForEnvVariables(verbose?: boolean): Promise<vo
  * @param verbose The verbosity flag.
  */
 export declare function initConfig(verbose?: boolean): Promise<void>;
+/**
+ * Function to set environment variables.
+ * @param key The key of the environment variable.
+ * @param value The value of the environment variable.
+ * @returns void
+ */
+export declare function setEnvProperty(key: string, value: string): void;
+/**
+ * Loads the environment variables from a file.
+ * @param filePath The path to the environment file.
+ * @returns void
+ */
+export declare function loadEnvFromFile(filePath: string): void;

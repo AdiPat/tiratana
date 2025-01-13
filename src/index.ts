@@ -25,7 +25,7 @@ import {
   stripMarkdown,
 } from "./utils";
 import { Loader } from "./loader";
-import { initConfig, promptUserForEnvVariables } from "./config";
+import { initConfig, loadEnvFromFile } from "./config";
 import fs from "fs/promises";
 import chalk from "chalk";
 
@@ -77,6 +77,12 @@ async function initArgs(): Promise<TiratanaArgs> {
       demandOption: false,
       describe: "The file to use for standardization",
     })
+    .option("env",{
+      alias: "e",
+      type: "string",
+      demandOption: false,
+      describe: "The environment file to use for configuration"
+    })
     .help()
     .parse();
 
@@ -88,6 +94,7 @@ async function initArgs(): Promise<TiratanaArgs> {
     writePreliminaryAnalysis: argv.writePreliminaryAnalysis as boolean,
     standardizationFile: argv.standardizationFile as string,
     standardize: argv.standardize as boolean,
+    env: argv.env as string
   };
 
   return args;
@@ -100,7 +107,6 @@ async function clearScreen() {
   process.stdout.write("\x1Bc");
 }
 
-async function runStandardization(args: TiratanaArgs) {}
 
 /**
  * Runs the Tiratana program.
@@ -114,7 +120,10 @@ async function run(): Promise<void> {
 
   const args = await initArgs();
   const verbose = args.verbose;
-
+  if (args.env) {
+    console.log(chalk.yellow(`🔧 Loading environment variables from file: ${args.env}`));
+    loadEnvFromFile(args.env);
+  }
   if (args.directory) {
     try {
       await fs.access(args.directory);

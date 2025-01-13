@@ -19,7 +19,7 @@ import {
   colors,
   animals,
 } from "unique-names-generator";
-import fs from "fs/promises";
+
 
 /**
  * Splits text into chunks of a specified size with optional overlap.
@@ -101,6 +101,7 @@ export function printHelp(): void {
     " --writePreliminaryAnalysis  Write preliminary analysis to a file",
     " --standardize       Standardize the report in cases where you're not happy with the generated report.",
     " --standardizationFile <file>  The file to use for standardization.",
+    " --env <file>        The environment file to use for configuration.",
   ];
 
   for (const line of helpLines) {
