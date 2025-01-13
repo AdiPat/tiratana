@@ -124,5 +124,5 @@ Tiratana is licensed under the MIT License. See the [LICENSE](LICENSE) file for 
 Start generating smarter codebase reports with Tiratana today! 🎉
 
 
-> _"I don't configure what I can't figure"_ 🦹🏼
+> _"I don't configure what I can't figure"_ 🦹🏼 — Aditya Patange (AdiPat)
 
