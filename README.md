@@ -1,6 +1,10 @@
 # Tiratana 💎
 
-**Tiratana 💎** is a powerful and simple commandline tool (CLI) that generates useful codebase reports in a single command! Designed to save time and effort, Tiratana helps you uncover architectural insights, design patterns, potential vulnerabilities, and more, all in a minimal and elegant way.
+<p align="center">
+  <img src="assets/tiratana_logo.png" style="width: 84%; height: auto;">
+</p>
+
+**Tiratana** is a powerful and simple commandline tool (CLI) that generates useful codebase reports in a single command! Designed to save time and effort, Tiratana helps you uncover architectural insights, design patterns, potential vulnerabilities, and more, all in a minimal and elegant way.
 
 ---
 
