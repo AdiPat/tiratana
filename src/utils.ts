@@ -95,6 +95,12 @@ export function printHelp(): void {
     "Options:",
     "  --directory <dir>  Directory to process",
     "  --help             Print this help message\n",
+    " --outputFile <file>  Output file to write the report to",
+    " --verbose           Print verbose logs",
+    " --performanceStats  Print performance statistics",
+    " --writePreliminaryAnalysis  Write preliminary analysis to a file",
+    " --standardize       Standardize the report in cases where you're not happy with the generated report.",
+    " --standardizationFile <file>  The file to use for standardization.",
   ];
 
   for (const line of helpLines) {
