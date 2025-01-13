@@ -127,3 +127,7 @@ out
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+# Ignore meta folder
+meta/
+test_folder/

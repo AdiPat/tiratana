@@ -1,18 +1,39 @@
 #!/usr/bin/env node
-import "./config";
+
+/**
+ *
+ * The 'runner' function for the Tiratana CLI.
+ *
+ * @author Aditya Patange (AdiPat)
+ * @description Tiratana CLI runner program.
+ * @file index.ts
+ * @license MIT
+ * @module tiratana
+ * ⚡️ "CLI is to terminal, as GUI is to desktop." — AdiPat
+ *
+ */
+
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
+import { generateReport, standardizeReport } from "./report-generator";
+import { Path, TiratanaArgs } from "./types";
 import {
-  clearReports,
-  generateReport,
-  getAllValidFiles,
-  getReportFilePath,
-  writeReport,
-} from "./report-generator";
-import { Path, TArgs } from "./types";
-import { validateArgs } from "./utils";
+  generateFunFileName,
+  prettyLogArgs,
+  validateArgs,
+  printBanner,
+  stripMarkdown,
+} from "./utils";
+import { Loader } from "./loader";
+import { initConfig, promptUserForEnvVariables } from "./config";
+import fs from "fs/promises";
+import chalk from "chalk";
 
-async function initArgs(): Promise<TArgs> {
+/**
+ * Parses the command-line arguments and returns them in a recognizable format.
+ * @returns The parsed command-line arguments.
+ */
+async function initArgs(): Promise<TiratanaArgs> {
   const argv = await yargs(hideBin(process.argv))
     .option("directory", {
       alias: "d",
@@ -20,109 +41,250 @@ async function initArgs(): Promise<TArgs> {
       demandOption: false,
       describe: "The directory to process",
     })
-    .option("all", {
-      alias: "a",
+    .option("verbose", {
+      alias: "v",
       type: "boolean",
       default: false,
-      describe: "Process all files",
+      describe: "Print verbose logs",
     })
-    .option("individual", {
-      alias: "i",
+    .option("outputFile", {
+      alias: "o",
+      type: "string",
+      demandOption: false,
+      describe: "The output file to write the report to",
+    })
+    .option("performanceStats", {
+      alias: "p",
       type: "boolean",
       default: false,
-      describe: "Generate individual reports",
+      describe: "Print performance statistics",
     })
-    .option("file_path", {
+    .option("writePreliminaryAnalysis", {
+      alias: "z",
+      type: "boolean",
+      default: false,
+      describe: "Write preliminary analysis to a file",
+    })
+    .option("standardize", {
+      alias: "s",
+      type: "boolean",
+      default: false,
+      describe: "Standardize the report",
+    })
+    .option("standardizationFile", {
       alias: "f",
       type: "string",
-      default: "",
-      describe: "The path of a specific file to process",
-    })
-    .option("clear", {
-      alias: "c",
-      type: "boolean",
-      default: false,
-      describe: "Clear all reports in the directory",
+      demandOption: false,
+      describe: "The file to use for standardization",
     })
     .help()
     .parse();
 
-  return {
+  const args: TiratanaArgs = {
     directory: argv.directory as string,
-    all: argv.all as boolean,
-    individual: argv.individual as boolean,
-    file_path: argv.file_path as string,
-    clear: argv.clear as boolean,
+    verbose: argv.verbose as boolean,
+    outputFile: argv.outputFile as string,
+    performanceStats: argv.performanceStats as boolean,
+    writePreliminaryAnalysis: argv.writePreliminaryAnalysis as boolean,
+    standardizationFile: argv.standardizationFile as string,
+    standardize: argv.standardize as boolean,
   };
+
+  return args;
 }
 
 /**
- *
+ * Clears the terminal screen.
+ */
+async function clearScreen() {
+  process.stdout.write("\x1Bc");
+}
+
+async function runStandardization(args: TiratanaArgs) {}
+
+/**
+ * Runs the Tiratana program.
  * @param directory The directory to process.
  * @returns void
  */
 async function run(): Promise<void> {
+  await clearScreen();
+  console.log("Welcome to Tiratana!");
+  await printBanner();
+
   const args = await initArgs();
+  const verbose = args.verbose;
+
+  if (args.directory) {
+    try {
+      await fs.access(args.directory);
+    } catch (error: any) {
+      console.error(
+        chalk.redBright(
+          `Error: Directory '${args.directory}' does not exist or is inaccessible.\n`
+        )
+      );
+      process.exit(1);
+    }
+  }
+
+  if (args.standardize) {
+    if (!args.standardizationFile) {
+      console.error(
+        chalk.redBright(
+          "Error: Standardization file not provided. Please provide a standardization file to proceed."
+        )
+      );
+      process.exit(1);
+    }
+
+    let outputFile = args.outputFile;
+
+    if (!outputFile) {
+      outputFile = "standardized_report_" + generateFunFileName("md");
+      console.warn(
+        chalk.yellow(`No output file specified. Using default: ${outputFile}.`)
+      );
+    }
+
+    if (verbose) {
+      console.log(
+        chalk.yellow(
+          `🔧 Standardization: Running standardization on the report ${args.standardizationFile}`
+        )
+      );
+    }
+
+    const reportContent = await fs
+      .readFile(args.standardizationFile, "utf8")
+      .catch((error) => {
+        console.error(
+          chalk.redBright("Error reading standardization file: ", error.message)
+        );
+        process.exit(1);
+      });
+
+    const standardizedReport = await standardizeReport(reportContent);
+
+    await fs
+      .writeFile(outputFile, standardizedReport.standardizedReport, "utf8")
+      .then(() => {
+        console.log(
+          chalk.green(`🎉 Standardized report written to ${outputFile}!`)
+        );
+      })
+      .catch((err) => {
+        console.error(
+          chalk.redBright("Error writing standardized report: ", err.message)
+        );
+      });
+
+    if (args.performanceStats) {
+      console.log(chalk.yellowBright("🔥 Performance Stats:"));
+      console.table(standardizedReport.performanceStats);
+    }
+
+    return;
+  }
+
+  if (verbose) {
+    console.log(
+      chalk.yellowBright(
+        "🔊 Verbose Mode: Enabled!\nPrinting verbose logs for debugging."
+      )
+    );
+  }
+
+  const writePreliminaryAnalysis = Boolean(args.writePreliminaryAnalysis);
+
+  if (writePreliminaryAnalysis) {
+    console.log(
+      chalk.yellowBright(
+        "📝 Preliminary Analysis: Enabled!\nWriting preliminary analysis to file."
+      )
+    );
+  }
+
+  const performanceStats = Boolean(args.performanceStats);
+
+  if (performanceStats) {
+    console.log(
+      chalk.yellowBright(
+        "🔥 Performance Stats: Enabled!\nTracking system potential in real-time."
+      )
+    );
+  }
+
+  const outputFile = args.outputFile ?? "report_" + generateFunFileName("md");
+
+  if (!args.outputFile) {
+    console.warn(
+      chalk.yellow(`No output file specified. Using default: ${outputFile}`)
+    );
+  }
+
+  await initConfig(verbose);
+
+  if (verbose) {
+    await Loader.load(
+      () => {
+        prettyLogArgs(args);
+      },
+      2000,
+      "Processing args..."
+    );
+  }
 
   validateArgs(args);
 
-  if (args.clear) {
-    console.log("tiratana: clearing reports");
-    const clearedReports = clearReports(args.directory);
-    console.log(`tiratana: cleared ${clearedReports} reports`);
+  const report = await generateReport(
+    args.directory,
+    verbose,
+    performanceStats
+  );
+
+  if (performanceStats) {
+    console.log(chalk.yellowBright("🔥 Performance Stats:"));
+    console.table(report.performanceTable);
   }
 
-  if (args.file_path) {
-    const report = await generateReport(args.file_path);
-    const reportFilePath = getReportFilePath(args.file_path);
+  try {
+    if (writePreliminaryAnalysis) {
+      const preliminaryAnalysisFile = "preliminary_analysis_" + outputFile;
 
-    if (reportFilePath) {
-      writeReport(report, reportFilePath);
-    }
-
-    console.log(`tiratana: processed ${args.file_path}`);
-    return;
-  }
-
-  if (args.all) {
-    const files = getAllValidFiles(args.directory);
-
-    if (!files) {
-      console.log(
-        `tiratana: failed to fetch files ${args.directory} (system error)`
+      if (verbose) {
+        console.log(
+          chalk.yellow(
+            `👉🏽 Writing preliminary analysis to ${preliminaryAnalysisFile}...`
+          )
+        );
+      }
+      await fs.writeFile(
+        preliminaryAnalysisFile,
+        report.preliminaryAnalysis,
+        "utf8"
       );
-      return;
-    }
 
-    if (files.length == 0) {
-      console.log(`tiratana: no files found in ${args.directory}`);
-      return;
-    }
-
-    console.log(`tiratana: found ${files.length} files in ${args.directory}`);
-
-    for (const sourceFile of files) {
-      try {
-        const report = await generateReport(sourceFile);
-        const reportFilePath = getReportFilePath(sourceFile);
-
-        if (reportFilePath) {
-          writeReport(report, reportFilePath);
-        }
-
-        console.log(`tiratana: processed ${sourceFile}`);
-      } catch (err) {
-        console.error(`tiratana: failed to process ${sourceFile}`, err);
+      if (verbose) {
+        console.log(
+          chalk.green(
+            `🎉 Preliminary analysis written to ${preliminaryAnalysisFile}!`
+          )
+        );
       }
     }
 
-    console.log(
-      `tiratana: processed ${files.length} files in ${args.directory}.`
-    );
-    return;
+    const cleanedReport = stripMarkdown(report.report, verbose);
+    await fs.writeFile(outputFile, cleanedReport, "utf8");
+    console.log(chalk.green(`🎉 Report written to ${outputFile}!`));
+  } catch (error) {
+    console.error(chalk.redBright("Error writing report to file: ", error));
   }
 }
 
-run();
+// Run the program if called directly from the command line
+if (require.main === module) {
+  run();
+}
 
-export { generateReport, writeReport, Path, TArgs };
+export { generateReport, Path, TiratanaArgs };
