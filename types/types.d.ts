@@ -9,7 +9,6 @@
  * ⚡️ "The best way to learn to code is to code." — Oen
  *
  */
-
 /**
  * The command-line arguments for the Tiratana CLI.
  * @interface TiratanaArgs
@@ -23,15 +22,14 @@
  *
  */
 interface TiratanaArgs {
-  directory: string;
-  outputFile?: string;
-  verbose?: boolean;
-  performanceStats?: boolean;
-  writePreliminaryAnalysis?: boolean;
-  standardize?: boolean;
-  standardizationFile?: string;
+    directory: string;
+    outputFile?: string;
+    verbose?: boolean;
+    performanceStats?: boolean;
+    writePreliminaryAnalysis?: boolean;
+    standardize?: boolean;
+    standardizationFile?: string;
 }
-
 /**
  *
  * A file path.
@@ -40,5 +38,4 @@ interface TiratanaArgs {
  *
  */
 type Path = string;
-
 export { TiratanaArgs, Path };

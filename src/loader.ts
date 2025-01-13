@@ -1,5 +1,37 @@
+/**
+ *
+ * Re-usable Loader class for CLI applications.
+ * @author Aditya Patange (AdiPat)
+ * @description Re-usable Loader class for CLI applications.
+ * @file loader.ts
+ * @license MIT
+ * @module tiratana
+ * ⚡️ "To load is a computer's way of saying 'Wait'" — Unknown
+ *
+ */
 import chalk from "chalk";
 
+/**
+ * A re-usable Loader class for CLI applications.
+ * @class Loader
+ * @property {string[]} spinnerFrames - The frames of the spinner animation.
+ * @property {NodeJS.Timer | null} interval - The interval for the spinner animation.
+ * @property {number} frameIndex - The current frame index.
+ * @property {string} currentLine - The current line of the spinner.
+ * @property {string} defaultMessage - The default message to display.
+ * @property {number} intervalTime - The interval time for the spinner.
+ *
+ * @example
+ * const loader = new Loader();
+ * loader.start("Loading...");
+ * loader.stop("Done!");
+ *
+ * @summary We wanted loading animations for our CLI, so we built a re-usable Loader class.
+ * Our goal was to avoid using external libraries and keep the codebase minimal.
+ * Current libraries don't have what we need without bloat  - simple, clean and customizable loaders.
+ * If you plan to copy this code and use it in your project, make sure you comply with the MIT license.
+ *
+ */
 export class Loader {
   private spinnerFrames: string[] = [
     "⠋",
