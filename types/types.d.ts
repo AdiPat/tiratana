@@ -19,6 +19,7 @@
  * @property {boolean} [writePreliminaryAnalysis] - Write preliminary analysis to a file.
  * @property {boolean} [standardize] - Standardize the report.
  * @property {string} [standardizationFile] - The file to use for standardization.
+ * @property {string} [env] - The environment file to use for configuration.
  *
  */
 interface TiratanaArgs {
@@ -29,6 +30,7 @@ interface TiratanaArgs {
     writePreliminaryAnalysis?: boolean;
     standardize?: boolean;
     standardizationFile?: string;
+    env?: string;
 }
 /**
  *

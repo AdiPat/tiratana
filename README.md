@@ -26,7 +26,12 @@ Install Tiratana using npm:
 ```bash
 npm install tiratana -g
 ```
+### Custom Environment Variables
+If you want to use custom environment variables, you can create a file with the name `env` in the root directory of your project. The file should contain `OPENAI_API_KEY=<your_api_key>`.
 
+```bash
+tiratana -d ./my-codebase --env ./path/to/env/file.env
+```
 ---
 
 ## **Usage**
@@ -46,6 +51,7 @@ tiratana -d ./my-project -o report.md -v
 - **`--writePreliminaryAnalysis, -z`**: Save preliminary analysis to a file (optional).
 - **`--standardize, -s`**: Generate a standardized report (optional).
 - **`--standardizationFile, -f`**: Use a file for report standardization (optional).
+- **`--env, -e`**: Specify an environment file to load (optional).
 - **`--version`**: Show the current version of Tiratana.
 - **`--help`**: Show help.
 
@@ -73,7 +79,10 @@ tiratana -d ./my-codebase -v
 tiratana -d ./my-codebase -p
 ```
 
----
+### Using custom environment variables:
+```bash
+tiratana -d ./my-codebase --env ./path/to/env/file.env
+---   
 
 ## **For Contributors**
 

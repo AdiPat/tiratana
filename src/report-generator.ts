@@ -166,9 +166,10 @@ export async function generateCodeFileAnalysis(codeFile: {
     const { text: report } = await generateText(llmConfig);
 
     return { file: codeFile.filePath, report };
-  } catch (error) {
+  } catch (error : any) {
     const errorMessage = `Failed to generate report for file: ${codeFile.filePath} due to unexpected system error.`;
     console.error(chalk.redBright(errorMessage));
+    console.error(chalk.redBright(error?.message));
     return {
       file: codeFile.filePath,
       report: errorMessage,
