@@ -82,6 +82,8 @@ tiratana -d ./my-codebase -p
 ### Using custom environment variables:
 ```bash
 tiratana -d ./my-codebase --env ./path/to/env/file.env
+```
+
 ---   
 
 ## **For Contributors**
